@@ -1,57 +1,59 @@
-# 🛡️ EVALinux Crypto Suite - Crystal Integration Samples
+# crystal-crypto-samples
 
-Welcome to the **EVALinux Crypto Suite**! This repository serves as the central entry point, demonstration ground, and integration sample for the suite of specialized, highly-secure Crystal shards orchestrated by Rénich Bon Ćirić and the Google Antigravity Agent Orchestrator.
+[![CI](https://gitlab.com/renich/crystal-crypto-samples/badges/master/pipeline.svg)](https://gitlab.com/renich/crystal-crypto-samples/-/pipelines)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL_v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
-If you are looking to build deeply secure, deterministic, and hardware-bound applications in the Crystal programming language, you've found the right ecosystem.
+Welcome to the **EVALinux Crypto Suite**! This repository serves as the central demonstration ground, end-to-end integration harness, and usage sample for the suite of specialized, hardware-bound cryptographic Crystal shards.
 
-## 🚀 The Crypto Suite Shards
+## The Crypto Suite Shards
 
-This sample application dynamically links and demonstrates the capabilities of our four foundational shards. We highly encourage you to explore, fork, and utilize these libraries in your own projects!
+This sample application dynamically links and demonstrates the capabilities of our foundational shards:
 
-### 📦 [Crystal CBOR FIDO](https://gitlab.com/renich/crystal-cbor-fido)
-A fiercely memory-safe parsing engine for CBOR streams. It utilizes strict boundary limits to prevent buffer overflows and guarantees deterministic byte-array representations to seamlessly comply with FIDO/WebAuthn assertions.
+- **[Crystal CBOR FIDO](https://gitlab.com/renich/crystal-cbor-fido)**: Memory-safe Canonical CBOR parser and encoder compliant with FIDO2/WebAuthn assertions.
+- **[Crystal DBus Native](https://gitlab.com/renich/crystal-dbus-native)**: Native, zero-dependency D-Bus wire protocol with SASL authentication and UNIX domain socket file descriptor passing (`SCM_RIGHTS`).
+- **[Crystal ECC Constant](https://gitlab.com/renich/crystal-ecc-constant)**: Strictly constant-time Elliptic Curve Cryptography (Ed25519 signatures and X25519 ECDH) backed by libsodium.
+- **[Crystal TPM2 TSS](https://gitlab.com/renich/crystal-tpm2-tss)**: TPM 2.0 Software Stack featuring hardware NV storage key persistence, session-based parameter encryption, and $\mathcal{O}(1)$ nonce-reuse detection.
 
-### 🔌 [Crystal DBus Native](https://gitlab.com/renich/crystal-dbus-native)
-Native, pure-Crystal DBus integration. It strictly relies on File Descriptor (FD) passing via UNIX sockets, implements SASL ANONYMOUS/EXTERNAL authentication pipelines, and utilizes rigorously typed signature validation to crush malformed packet attacks.
+## Getting Started
 
-### 🔐 [Crystal ECC Constant](https://gitlab.com/renich/crystal-ecc-constant)
-Constant-Time Elliptic Curve Cryptography. Instead of relying on standard GC-managed classes, this shard utilizes isolated `Struct` wrappers natively binding to system `libsodium`. This eradicates Use-After-Free and Double-Free GC vulnerabilities while providing pristine, timing-attack-resistant Ed25519 and X25519 cryptography.
+### Installation & Prerequisites
 
-### 🛡️ [Crystal TPM2 TSS](https://gitlab.com/renich/crystal-tpm2-tss)
-TPM 2.0 Trusted Software Stack Integration. Unleash your hardware! Features thread-safe session management using M:N Crystal scheduling, FIFO eviction strategies, hardware-bound KDF key derivation, and FIDO2 credential management safely isolated from direct hardware polling loops.
-
----
-
-## 🛠️ Getting Started
-
-### Official Source
-The official, canonical home for this repository is on **GitLab**. To get started, clone the repository directly from the source:
+Ensure host dependencies are installed (`libsodium-devel` and `tpm2-tss-devel` on Fedora/RHEL):
 
 ```bash
+# Clone the repository
 git clone git@gitlab.com:renich/crystal-crypto-samples.git
 cd crystal-crypto-samples
+
+# Install shard dependencies
+shards install
 ```
 
-*(Note: While a mirror exists on GitHub, GitLab is the primary forge for the EVALinux Crypto Suite).*
-
-### Building the Samples
-
-Ensure you have the required system dependencies (`libsodium-devel` and `tpm2-tss-devel` on Fedora/RHEL, or their `-dev` equivalents on Alpine). 
+### Running the Integration Sample
 
 ```bash
-# Install the shard dependencies securely from their remote origins
-shards install
-
-# Compile and execute the integration samples
 crystal run src/crystal_crypto_samples.cr
 ```
 
-## 📜 Code of Honor
-The entire EVALinux Crypto Suite pipeline, architecture, and generated codebase is strictly bound to and respects the [Code of Honor](docs/technical/CODE_OF_HONOR.rst). All contributors and orchestrated agents are expected to read and adhere to it.
+## Development & Verification
 
-## ⚖️ License
-This project is proudly published under the **GPLv3** License.
+Build targets and test suites are managed via GNU Make:
 
----
-*Co-developed-by: Gemini AI <renich+gemini@woralelandia.com>*  
-*Signed-off-by: Rénich Bon Ćirić <renich@woralelandia.com>*
+```bash
+make all      # Runs linting (Ameba & Flaw) and test suite
+make test     # Executes crystal spec
+make lint     # Executes Ameba static analysis and Flaw scanner
+make docs     # Generates API documentation into docs/technical/api
+```
+
+## Documentation
+
+- **API Documentation**: Generated HTML docs located at [`docs/technical/api/`](docs/technical/api/index.html).
+- **Technical Specification**: [`docs/technical/spec.rst`](docs/technical/spec.rst)
+- **Project Roadmap**: [`docs/project/roadmap.rst`](docs/project/roadmap.rst)
+- **Changelog**: [`CHANGELOG.rst`](CHANGELOG.rst)
+- **Code of Honor**: [`docs/technical/CODE_OF_HONOR.rst`](docs/technical/CODE_OF_HONOR.rst)
+
+## License
+
+This project is licensed under the **GNU General Public License v3.0 or later** ([GPL-3.0-or-later](LICENSE)).

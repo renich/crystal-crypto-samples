@@ -13,8 +13,8 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [0.1.1] - 2026-08-13
 ====================
 
-Changed
--------
+.. rubric:: Changed
+
 - Added ``flaw`` to development dependencies in ``shard.yml``.
 - Corrected doc directory path in GNUmakefile install target.
 - Synchronized with updated upstream component dependencies.
@@ -22,8 +22,8 @@ Changed
 [0.1.0] - 2026-06-05
 ====================
 
-Added
------
+.. rubric:: Added
+
 - Initial orchestrated release of the architecture.
 - Full TDD specifications with >80% code coverage.
 - Code of Honor integration.
