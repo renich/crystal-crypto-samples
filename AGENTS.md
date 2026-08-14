@@ -17,7 +17,7 @@ This project demonstrates the simultaneous integration of:
 - **No Suppressions**: No `# ameba:disable` or `# flaw:disable`.
 - **Line Length**: Max 132 characters.
 ### 3. Continuous Integration
-- Uses GitLab CI with `crystallang/crystal:latest-alpine`.
+- Uses GitLab CI with `crystallang/crystal:latest`.
 - NO GitHub Actions workflows.
 
 ## Code of Honor
