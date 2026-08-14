@@ -30,5 +30,5 @@ DESTDIR ?=
 DATADIR ?= $(PREFIX)/share
 
 install: docs
-	install -d $(DESTDIR)$(DATADIR)/doc/crystal-cbor-fido
-	cp -r docs/* $(DESTDIR)$(DATADIR)/doc/crystal-cbor-fido/
+	install -d $(DESTDIR)$(DATADIR)/doc/crystal-crypto-samples
+	cp -r docs/* $(DESTDIR)$(DATADIR)/doc/crystal-crypto-samples/

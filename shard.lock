@@ -20,3 +20,7 @@ shards:
     git: https://github.com/renich/crystal-tpm2-tss.git
     version: 0.1.0+git.commit.c3992e6bbe7880e7396ba612de91edf0764ecc10
 
+  flaw:
+    git: https://github.com/kdairatchi/flaw.git
+    version: 0.1.0
+
