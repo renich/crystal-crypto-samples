@@ -1,5 +1,11 @@
-/docs/
 /lib/
 /bin/
 /.shards/
 *.dwarf
+/coverage/
+/spec_runner
+/test_bin
+/spec_bin
+scratch.cr
+/docs/technical/api/
+/docs/api/
