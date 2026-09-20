@@ -5,7 +5,7 @@ require "crystal-tpm2-tss"
 require "socket"
 
 module CrystalCryptoSamples
-  VERSION = "0.1.1"
+  VERSION = "0.1.2"
 
   def self.run_samples : Nil
     puts "=========================================================="

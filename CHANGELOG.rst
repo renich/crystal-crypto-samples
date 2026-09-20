@@ -10,6 +10,19 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+[0.1.2] - 2026-09-19
+====================
+
+.. rubric:: Added
+
+- Demonstrated native D-Bus SASL handshake authentication over in-memory UNIX domain socket pair.
+- Demonstrated TPM 2.0 hardware-bound auth value derivation with KDFa XOR parameter encryption.
+- Added execution guard to only run sample script directly when executed outside the test runner.
+
+.. rubric:: Changed
+
+- Synchronized and validated with hardened upstream cryptographic component libraries (``crystal-cbor-fido``, ``crystal-ecc-constant``, ``crystal-dbus-native``, and ``crystal-tpm2-tss``).
+
 [0.1.1] - 2026-08-13
 ====================
 
