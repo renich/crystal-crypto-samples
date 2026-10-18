@@ -10,6 +10,20 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+[0.3.0] - 2026-10-18
+====================
+
+.. rubric:: Added
+
+- Added ``crystal-pqc-constant`` (``~> 0.1.0``) dependency and ``CrystalCryptoSamples.run_pqc_sample`` demonstrating NIST FIPS 203 ``ML-KEM-768`` key encapsulation/decapsulation and NIST FIPS 204 ``ML-DSA-65`` digital signature generation and verification in guarded ``libsodium`` memory.
+- Expanded ``run_dbus_sample`` to demonstrate ``BodyCodec.encode`` and ``BodyCodec.decode`` roundtrip marshaling of ``a{sv}`` dictionaries with ``Variant`` values from ``crystal-dbus-native`` ``v0.3.0``.
+- Expanded ``run_tpm2_sample`` to demonstrate real NIST P-256 public key coordinate retrieval via ``TPM2_ReadPublic`` and cryptographic ECDSA ``(r, s)`` verification via ``FIDO2Credential#verify`` from ``crystal-tpm2-tss`` ``v0.4.0``.
+- Added full ``../init`` modular documentation architecture (``docs/business/``, ``docs/functional/``, ``docs/technical/``, ``docs/adrs/``, ``docs/project/``, ``docs/user/``), ``LICENSE-DOCS`` (CC BY-SA 4.0), root ``CODE_OF_HONOR.rst``, and Sphinx ``dirhtml`` build integration.
+
+.. rubric:: Changed
+
+- Upgraded shard dependencies to ``crystal-cbor-fido`` ``~> 0.2.1``, ``crystal-dbus-native`` ``~> 0.3.0``, ``crystal-ecc-constant`` ``~> 0.2.1``, ``crystal-pqc-constant`` ``~> 0.1.0``, and ``crystal-tpm2-tss`` ``~> 0.4.0``.
+
 [0.2.1] - 2026-10-18
 ====================
 

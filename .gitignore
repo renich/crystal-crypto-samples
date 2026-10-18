@@ -8,6 +8,9 @@
 /spec_bin
 scratch.cr
 /docs/technical/api/
+/docs/build/
 /docs/api/
+/public/
+/.agents/
 shard.override.yml
 /shard.lock

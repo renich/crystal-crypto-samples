@@ -1,5 +1,5 @@
-SHELL = /bin/sh
-.SHELLFLAGS := -ec
+SHELL := /usr/bin/bash
+.SHELLFLAGS := -euo pipefail -c
 .ONESHELL:
 .DELETE_ON_ERROR:
 .SUFFIXES:
@@ -8,6 +8,7 @@ MAKEFLAGS += --no-builtin-rules
 
 CRYSTAL ?= crystal
 SHARDS ?= shards
+CRSTLINT ?= crstlint
 PREFIX ?= /usr/local
 DESTDIR ?=
 BINDIR ?= $(PREFIX)/bin
@@ -16,9 +17,10 @@ DOCDIR ?= $(DATADIR)/doc/crystal-crypto-samples
 
 SRCS := $(shell find src -name '*.cr' 2>/dev/null)
 SPECS := $(shell find spec -name '*.cr' 2>/dev/null)
+RST_FILES := $(wildcard *.rst) $(shell find docs -type f -name '*.rst' 2>/dev/null)
 
 .DEFAULT_GOAL := all
-.PHONY: all build test check lint format docs install uninstall clean help
+.PHONY: all build test spec check lint doc-check format docs install uninstall clean distclean help
 
 all: lint test build ## Run linters, test suite, and build sample binary
 
@@ -45,21 +47,28 @@ bin/crystal-crypto-samples: $(SRCS) | lib bin
 
 build: bin/crystal-crypto-samples ## Build the crystal-crypto-samples executable
 
-test: | lib ## Execute the Crystal spec suite
-	$(CRYSTAL) spec
+test: spec ## Execute the Crystal spec suite
 
-check: test ## Alias for test (GNU standard)
+spec: | lib
+	$(CRYSTAL) spec --error-trace
+
+check: lint test doc-check ## Run linters, test suite, and documentation validation
 
 lint: bin/ameba bin/flaw ## Run Ameba (--all) and Flaw static analyzers
 	$(CRYSTAL) tool format --check src spec
 	./bin/ameba --all
 	./bin/flaw scan .
 
+doc-check: ## Validate RST documentation with crstlint and rstcheck
+	@if command -v $(CRSTLINT) >/dev/null 2>&1; then $(CRSTLINT) -r .; fi
+	@if command -v rstcheck >/dev/null 2>&1; then rstcheck $(RST_FILES); fi
+
 format: ## Format Crystal source and spec files
 	$(CRYSTAL) tool format src spec
 
-docs: | lib ## Generate Crystal API documentation
+docs: | lib ## Generate Crystal API documentation and Sphinx dirhtml portal
 	$(CRYSTAL) docs --output=docs/technical/api
+	@if command -v sphinx-build >/dev/null 2>&1; then $(MAKE) -C docs dirhtml; fi
 
 install: bin/crystal-crypto-samples docs ## Install binary and documentation
 	install -d $(DESTDIR)$(BINDIR)
@@ -72,7 +81,10 @@ uninstall: ## Remove installed binary and documentation
 	rm -rf $(DESTDIR)$(DOCDIR)
 
 clean: ## Remove build artifacts and generated documentation
-	rm -rf docs/technical/api .crystal bin shard.lock
+	rm -rf docs/technical/api docs/build public .crystal bin shard.lock
+
+distclean: clean ## Remove all build outputs and installed shard dependencies
+	rm -rf lib .shards
 
 help: ## Display available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \

@@ -1,6 +1,7 @@
 require "crystal-cbor-fido"
 require "crystal-dbus-native"
 require "crystal-ecc-constant"
+require "crystal-pqc-constant"
 require "crystal-tpm2-tss"
 require "socket"
 
@@ -8,9 +9,9 @@ require "socket"
 # Crystal cryptographic library suite.
 module CrystalCryptoSamples
   # Current version of the `crystal-crypto-samples` integration suite.
-  VERSION = "0.2.1"
+  VERSION = "0.3.0"
 
-  # Executes all four cryptographic integration demonstrations and writes
+  # Executes all five cryptographic integration demonstrations and writes
   # structured status output to *io*.
   def self.run_samples(io : IO = STDOUT) : Nil
     io.puts "=========================================================="
@@ -21,6 +22,7 @@ module CrystalCryptoSamples
     run_ecc_sample(io)
     run_dbus_sample(io)
     run_tpm2_sample(io)
+    run_pqc_sample(io)
 
     io.puts "\nAll dependencies successfully compiled and executed!"
     io.puts "=========================================================="
@@ -83,12 +85,13 @@ module CrystalCryptoSamples
     end
   end
 
-  # Demonstrates native D-Bus signature validation, SASL EXTERNAL
-  # authentication, UNIX FD negotiation, and bus `Hello` registration.
+  # Demonstrates native D-Bus signature validation, recursive `a{sv}` body
+  # marshaling, SASL EXTERNAL authentication, UNIX FD negotiation, and `Hello`.
   def self.run_dbus_sample(io : IO = STDOUT) : Nil
     io.puts "\n[3] Testing Native DBus Structures..."
     Crystal::Dbus::Native::SignatureValidator.validate("a{sv}")
     io.puts "Signature validation (a{sv}): VALID"
+    run_dbus_body_demo(io)
 
     client, server = UNIXSocket.pair(Socket::Type::STREAM)
     done = Channel(Nil).new(1)
@@ -108,6 +111,14 @@ module CrystalCryptoSamples
       conn.close
       done.receive
     end
+  end
+
+  private def self.run_dbus_body_demo(io : IO) : Nil
+    dict = Hash(Crystal::Dbus::Native::Value, Crystal::Dbus::Native::Value).new
+    dict["pin"] = Crystal::Dbus::Native::Variant.new("u", 42_u32)
+    encoded = Crystal::Dbus::Native::BodyCodec.encode("a{sv}", [dict] of Crystal::Dbus::Native::Value)
+    decoded = Crystal::Dbus::Native::BodyCodec.decode("a{sv}", encoded)
+    io.puts "DBus BodyCodec (a{sv}) roundtrip: #{decoded.size == 1 ? "SUCCESS" : "FAILED"}"
   end
 
   private def self.serve_mock_dbus_handshake(server : UNIXSocket) : Nil
@@ -135,8 +146,8 @@ module CrystalCryptoSamples
     server.flush
   end
 
-  # Demonstrates TPM 2.0 NV-backed FIDO2 credential persistence, ECDSA signing
-  # with nonce-reuse tracking, and KDFa XOR + AES-128-CFB parameter encryption.
+  # Demonstrates TPM 2.0 NV-backed FIDO2 credential persistence, real NIST P-256
+  # ECDSA signing/verification, and KDFa XOR + AES-128-CFB parameter encryption.
   def self.run_tpm2_sample(io : IO = STDOUT) : Nil
     io.puts "\n[4] Testing TPM2 TSS Memory Structures & Parameter Encryption..."
     tpm_mock = Crystal::Tpm2::Tss::TPMDevice.new
@@ -146,9 +157,11 @@ module CrystalCryptoSamples
     io.puts "Derived hardware-bound auth key: " \
             "[REDACTED #{credential.auth_value.size}-byte key] (handle: 0x#{handle_hex})"
 
-    sig = credential.sign(Bytes.new(32, 0xab_u8))
-    sig_ok = sig.r.size == 32 && sig.s.size == 32
-    io.puts "FIDO2 ECDSA signature generated (r: #{sig.r.size}B, s: #{sig.s.size}B): #{sig_ok ? "SUCCESS" : "FAILED"}"
+    digest = Bytes.new(32, 0xab_u8)
+    sig = credential.sign(digest)
+    verified = credential.verify(digest, sig)
+    io.puts "FIDO2 ECDSA P-256 signature & verification (r: #{sig.r.size}B, s: #{sig.s.size}B): " \
+            "#{verified ? "SUCCESS" : "FAILED"}"
 
     run_tpm2_encryption_demo(io, credential.auth_value)
   end
@@ -170,6 +183,44 @@ module CrystalCryptoSamples
     aes_enc = Crystal::Tpm2::Tss::ParameterEncryption.encrypt(payload, session, "AES-CFB")
     aes_dec = Crystal::Tpm2::Tss::ParameterEncryption.decrypt(aes_enc, session, "AES-CFB")
     io.puts "KDFa AES-128-CFB Parameter Encryption roundtrip: #{aes_dec == payload ? "SUCCESS" : "FAILED"}"
+  end
+
+  # Demonstrates NIST FIPS 203 ML-KEM-768 key encapsulation and NIST FIPS 204
+  # ML-DSA-65 digital signatures backed by libsodium guarded memory.
+  def self.run_pqc_sample(io : IO = STDOUT) : Nil
+    io.puts "\n[5] Testing Post-Quantum Cryptography (ML-KEM-768 & ML-DSA-65)..."
+    Crystal::Pqc::Constant::Sodium.init
+    run_ml_kem_demo(io)
+    run_ml_dsa_demo(io)
+  end
+
+  private def self.run_ml_kem_demo(io : IO) : Nil
+    kem = Crystal::Pqc::Constant::MLKEMKeyPair.generate
+    begin
+      encap = kem.encapsulate
+      decap_secret = kem.decapsulate(encap[:ciphertext])
+      matched = encap[:shared_secret].consume do |alice_ss|
+        decap_secret.consume do |bob_ss|
+          Crystal::Pqc::Constant::Sodium.constant_time_equal?(alice_ss, bob_ss)
+        end
+      end
+      io.puts "NIST FIPS 203 ML-KEM-768 encapsulation roundtrip: #{matched ? "SUCCESS" : "FAILED"}"
+    ensure
+      kem.dispose
+    end
+  end
+
+  private def self.run_ml_dsa_demo(io : IO) : Nil
+    dsa = Crystal::Pqc::Constant::MLDSAKeyPair.generate
+    begin
+      message = "Quantum-resistant FIDO2 assertion".to_slice
+      signature = dsa.sign(message)
+      valid = dsa.verify(message, signature)
+      io.puts "NIST FIPS 204 ML-DSA-65 signature verification (#{signature.size}B): " \
+              "#{valid ? "SUCCESS" : "FAILED"}"
+    ensure
+      dsa.dispose
+    end
   end
 end
 
