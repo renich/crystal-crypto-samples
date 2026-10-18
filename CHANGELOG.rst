@@ -10,6 +10,16 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+[0.2.1] - 2026-10-18
+====================
+
+.. rubric:: Added
+
+- Expanded ``run_cbor_sample`` to demonstrate canonical IEEE 754 ``Float16`` narrowing and ``UInt64`` serialization alongside deterministic map key sorting.
+- Expanded ``run_ecc_sample`` to demonstrate constant-time ``X25519KeyPair`` ECDH shared secret agreement with ``SharedSecret#consume`` and ``Sodium.constant_time_equal?``.
+- Expanded ``run_dbus_sample`` to demonstrate ``SignatureValidator.validate("a{sv}")``, ``NEGOTIATE_UNIX_FD`` negotiation, and full bus ``Hello`` registration returning a unique bus name.
+- Expanded ``run_tpm2_sample`` to demonstrate stateful ``FIDO2CredentialManager`` NV handle persistence, ``FIDO2Credential#sign`` ECDSA P-256 signing with ``SignatureRTracker``, and ``ParameterEncryption`` ``AES-CFB`` roundtrip alongside ``XOR``.
+
 [0.2.0] - 2026-10-18
 ====================
 

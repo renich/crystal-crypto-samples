@@ -8,7 +8,7 @@ require "socket"
 # Crystal cryptographic library suite.
 module CrystalCryptoSamples
   # Current version of the `crystal-crypto-samples` integration suite.
-  VERSION = "0.2.0"
+  VERSION = "0.2.1"
 
   # Executes all four cryptographic integration demonstrations and writes
   # structured status output to *io*.
@@ -26,48 +26,74 @@ module CrystalCryptoSamples
     io.puts "=========================================================="
   end
 
-  # Demonstrates canonical CTAP2/FIDO2 CBOR map encoding and decoding.
+  # Demonstrates canonical CTAP2/FIDO2 CBOR map encoding, canonical Float16
+  # narrowing, UInt64 serialization, and decoding.
   def self.run_cbor_sample(io : IO = STDOUT) : Nil
     io.puts "\n[1] Testing CBOR FIDO Encoding..."
     data = Hash(Crystal::Cbor::Fido::Value, Crystal::Cbor::Fido::Value).new
     data["challenge"] = "rand123"
     data["user_id"] = 100_i64
+    data["counter"] = 18_446_744_073_709_551_615_u64
+    data["weight"] = 1.5_f64
 
     bytes = Crystal::Cbor::Fido.encode(data)
     io.puts "Encoded CBOR Payload: #{bytes.hexstring}"
+
+    float16_bytes = Crystal::Cbor::Fido.encode(1.5_f64)
+    io.puts "Canonical Float16 (1.5): #{float16_bytes.hexstring}"
 
     decoded = Crystal::Cbor::Fido.decode(bytes)
     io.puts "Decoded CBOR Payload: #{decoded}"
   end
 
-  # Demonstrates constant-time Ed25519 key generation, detached signing,
-  # verification, and guarded memory disposal.
+  # Demonstrates constant-time Ed25519 digital signatures and X25519 ECDH
+  # shared secret agreement with guarded libsodium memory disposal.
   def self.run_ecc_sample(io : IO = STDOUT) : Nil
-    io.puts "\n[2] Testing ECC Constant Time Signatures..."
+    io.puts "\n[2] Testing ECC Constant Time Signatures & X25519 ECDH..."
     Crystal::Ecc::Constant::Sodium.init
+    run_ed25519_demo(io)
+    run_x25519_demo(io)
+  end
+
+  private def self.run_ed25519_demo(io : IO) : Nil
     keypair = Crystal::Ecc::Constant::Ed25519KeyPair.generate
     begin
       message = "Strictly FIDO2 assertion".to_slice
       signature = keypair.sign(message)
-      is_valid = Crystal::Ecc::Constant::Sodium.verify_ed25519(keypair.public_key, message, signature)
+      is_valid = keypair.verify(message, signature)
       io.puts "Signature verification: #{is_valid ? "SUCCESS" : "FAILED"}"
     ensure
       keypair.dispose
     end
   end
 
-  # Demonstrates native D-Bus SASL EXTERNAL authentication over an in-memory
-  # UNIX domain socket pair.
+  private def self.run_x25519_demo(io : IO) : Nil
+    alice = Crystal::Ecc::Constant::X25519KeyPair.generate
+    bob = Crystal::Ecc::Constant::X25519KeyPair.generate
+    begin
+      agreed = alice.diffie_hellman(bob.public_key).consume do |alice_secret|
+        bob.diffie_hellman(alice.public_key).consume do |bob_secret|
+          Crystal::Ecc::Constant::Sodium.constant_time_equal?(alice_secret, bob_secret)
+        end
+      end
+      io.puts "X25519 ECDH shared secret agreement: #{agreed ? "SUCCESS" : "FAILED"}"
+    ensure
+      alice.dispose
+      bob.dispose
+    end
+  end
+
+  # Demonstrates native D-Bus signature validation, SASL EXTERNAL
+  # authentication, UNIX FD negotiation, and bus `Hello` registration.
   def self.run_dbus_sample(io : IO = STDOUT) : Nil
     io.puts "\n[3] Testing Native DBus Structures..."
+    Crystal::Dbus::Native::SignatureValidator.validate("a{sv}")
+    io.puts "Signature validation (a{sv}): VALID"
+
     client, server = UNIXSocket.pair(Socket::Type::STREAM)
     done = Channel(Nil).new(1)
     spawn do
-      server.read_byte
-      server.gets("\r\n")
-      server << "OK 0123456789abcdef0123456789abcdef\r\n"
-      server.flush
-      server.gets("\r\n")
+      serve_mock_dbus_handshake(server)
     ensure
       server.close
       done.send(nil)
@@ -75,23 +101,59 @@ module CrystalCryptoSamples
 
     conn = Crystal::Dbus::Native::DBusConnection.new(client)
     begin
-      guid = conn.start(1000_u32, hello: false)
-      io.puts "DBus connection authenticated via SASL (GUID: #{guid})."
+      unique_name = conn.start(1000_u32, hello: true, negotiate_unix_fd: true)
+      io.puts "DBus connection authenticated via SASL " \
+              "(GUID: #{conn.server_guid}, unique_name: #{unique_name}, unix_fds: true)."
     ensure
       conn.close
       done.receive
     end
   end
 
-  # Demonstrates TPM 2.0 hardware-bound KDF key derivation and session-based
-  # XOR parameter encryption.
+  private def self.serve_mock_dbus_handshake(server : UNIXSocket) : Nil
+    server.read_byte
+    server.gets("\r\n")
+    server << "OK 0123456789abcdef0123456789abcdef\r\n"
+    server.flush
+    server.gets("\r\n")
+    server << "AGREE_UNIX_FD\r\n"
+    server.flush
+    server.gets("\r\n")
+
+    call = Crystal::Dbus::Native::DBusMessage.parse(server)
+    body = IO::Memory.new
+    body.write_bytes(5_u32, IO::ByteFormat::LittleEndian)
+    body << ":1.42\0"
+    reply = Crystal::Dbus::Native::DBusMessage.method_return(
+      serial: 1_u32,
+      reply_serial: call.serial,
+      destination: ":1.42",
+      signature: "s",
+      body: body.to_slice
+    )
+    reply.serialize(server)
+    server.flush
+  end
+
+  # Demonstrates TPM 2.0 NV-backed FIDO2 credential persistence, ECDSA signing
+  # with nonce-reuse tracking, and KDFa XOR + AES-128-CFB parameter encryption.
   def self.run_tpm2_sample(io : IO = STDOUT) : Nil
     io.puts "\n[4] Testing TPM2 TSS Memory Structures & Parameter Encryption..."
     tpm_mock = Crystal::Tpm2::Tss::TPMDevice.new
     credential_manager = Crystal::Tpm2::Tss::FIDO2CredentialManager.new(tpm_mock)
-    auth_value = credential_manager.derive_auth_value("user-credential-1234")
-    io.puts "Derived hardware-bound auth key: [REDACTED #{auth_value.size}-byte key]"
+    credential = credential_manager.get_or_create_credential("user-credential-1234")
+    handle_hex = credential.persistent_handle.to_s(16)
+    io.puts "Derived hardware-bound auth key: " \
+            "[REDACTED #{credential.auth_value.size}-byte key] (handle: 0x#{handle_hex})"
 
+    sig = credential.sign(Bytes.new(32, 0xab_u8))
+    sig_ok = sig.r.size == 32 && sig.s.size == 32
+    io.puts "FIDO2 ECDSA signature generated (r: #{sig.r.size}B, s: #{sig.s.size}B): #{sig_ok ? "SUCCESS" : "FAILED"}"
+
+    run_tpm2_encryption_demo(io, credential.auth_value)
+  end
+
+  private def self.run_tpm2_encryption_demo(io : IO, payload : Bytes) : Nil
     session = Crystal::Tpm2::Tss::Session.new(
       0x0200_0000_u32,
       0_u8,
@@ -100,9 +162,14 @@ module CrystalCryptoSamples
     session.session_key = Bytes.new(32, 0x01_u8)
     session.update_nonce_tpm(Bytes.new(32, 0x02_u8))
     session.nonce_caller = Bytes.new(32, 0x03_u8)
-    encrypted = Crystal::Tpm2::Tss::ParameterEncryption.encrypt(auth_value, session, "XOR")
-    decrypted = Crystal::Tpm2::Tss::ParameterEncryption.decrypt(encrypted, session, "XOR")
-    io.puts "KDFa XOR Parameter Encryption roundtrip: #{decrypted == auth_value ? "SUCCESS" : "FAILED"}"
+
+    xor_enc = Crystal::Tpm2::Tss::ParameterEncryption.encrypt(payload, session, "XOR")
+    xor_dec = Crystal::Tpm2::Tss::ParameterEncryption.decrypt(xor_enc, session, "XOR")
+    io.puts "KDFa XOR Parameter Encryption roundtrip: #{xor_dec == payload ? "SUCCESS" : "FAILED"}"
+
+    aes_enc = Crystal::Tpm2::Tss::ParameterEncryption.encrypt(payload, session, "AES-CFB")
+    aes_dec = Crystal::Tpm2::Tss::ParameterEncryption.decrypt(aes_enc, session, "AES-CFB")
+    io.puts "KDFa AES-128-CFB Parameter Encryption roundtrip: #{aes_dec == payload ? "SUCCESS" : "FAILED"}"
   end
 end
 

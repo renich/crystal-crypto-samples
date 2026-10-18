@@ -36,6 +36,13 @@ make build
 ./bin/crystal-crypto-samples
 ```
 
+The sample runner executes four self-contained integration demonstrations:
+
+1. **CBOR FIDO (`run_cbor_sample`)**: Canonical map key ordering, `UInt64` serialization, and canonical IEEE 754 `Float16` narrowing (`1.5_f64` -> `f93e00`).
+2. **ECC Constant (`run_ecc_sample`)**: Constant-time Ed25519 detached signatures and mutual X25519 ECDH shared secret agreement (`SharedSecret#consume` + `Sodium.constant_time_equal?`) with deterministic `sodium_malloc` disposal.
+3. **DBus Native (`run_dbus_sample`)**: Recursive `SignatureValidator.validate("a{sv}")` validation, SASL `EXTERNAL` authentication, `NEGOTIATE_UNIX_FD` negotiation, and full `org.freedesktop.DBus.Hello` bus registration.
+4. **TPM2 TSS (`run_tpm2_sample`)**: Stateful `FIDO2CredentialManager` NV handle persistence (`0x81010001`), ECDSA P-256 signing with $\mathcal{O}(1)$ `SignatureRTracker` nonce-reuse verification, and both KDFa `XOR` and `AES-128-CFB` parameter encryption roundtrips.
+
 ## Development & Verification
 
 Build targets and test suites are managed via GNU Make:
