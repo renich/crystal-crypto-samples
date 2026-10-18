@@ -1,0 +1,70 @@
+direction: right
+
+vars: {
+  d2-config: {
+    layout-engine: dagre
+    theme-id: 4
+    pad: 40
+    center: true
+  }
+}
+
+classes: {
+  completed_phase: {
+    shape: step
+    style: {
+      stroke: "#059669"
+      stroke-width: 2
+      fill: "#ECFDF5"
+      font-color: "#065F46"
+      bold: true
+    }
+  }
+  planned_phase: {
+    shape: step
+    style: {
+      stroke: "#4F46E5"
+      stroke-width: 2
+      fill: "#EEF2FF"
+      font-color: "#312E81"
+      bold: true
+    }
+  }
+  milestone_box: {
+    shape: rectangle
+    style: {
+      stroke: "#3B82F6"
+      stroke-width: 1
+      border-radius: 6
+      fill: "#EFF6FF"
+    }
+  }
+}
+
+phase1: "Phase 1: Five-Shard Suite Orchestrator\nStatus: Completed [v0.3.0]" {
+  class: completed_phase
+
+  m1_1: "Milestone 1.1: Core Five-Shard Harness\n[FUNC-001]..[FUNC-005]\n[TECH-001]..[TECH-003]" {
+    class: milestone_box
+  }
+  m1_2: "Milestone 1.2: Security, QA & Docs Portal\n[FUNC-001]..[FUNC-005]\n[TECH-004], [TECH-005]" {
+    class: milestone_box
+  }
+
+  m1_1 -> m1_2: "Unblocks"
+}
+
+phase2: "Phase 2: Hybrid Classical-PQC Ceremonies\nStatus: Planned [v0.4.0]" {
+  class: planned_phase
+
+  m2_1: "Milestone 2.1: Hybrid X25519 + ML-KEM-768\n& Ed25519 + ML-DSA-65 CBOR Ceremony\n[FUNC-006], [TECH-005], [TECH-006]" {
+    class: milestone_box
+  }
+  m2_2: "Milestone 2.2: End-to-End D-Bus CTAP2\nAuthenticator & Rootless Podman Quadlet\n[FUNC-007], [TECH-005], [TECH-007]" {
+    class: milestone_box
+  }
+
+  m2_1 -> m2_2: "Unblocks"
+}
+
+phase1 -> phase2: "Baseline v0.3.0 Gate Passed"

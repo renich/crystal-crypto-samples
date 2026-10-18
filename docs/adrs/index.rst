@@ -9,3 +9,4 @@ This log captures immutable architectural decisions governing ``crystal-crypto-s
    :caption: Decisions
 
    2026-10-18-initial-architecture
+   2026-10-18-phase-2-hybrid-pqc-and-ctap2-dbus

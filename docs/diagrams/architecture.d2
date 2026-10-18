@@ -1,0 +1,139 @@
+direction: down
+
+vars: {
+  d2-config: {
+    layout-engine: dagre
+    theme-id: 4
+    pad: 40
+    center: true
+  }
+}
+
+classes: {
+  tier: {
+    style: {
+      stroke: "#2B6CB0"
+      stroke-width: 2
+      border-radius: 8
+      fill: "#F7FAFC"
+    }
+  }
+  orchestrator: {
+    shape: rectangle
+    style: {
+      stroke: "#4F46E5"
+      stroke-width: 2
+      border-radius: 6
+      fill: "#EEF2FF"
+      bold: true
+    }
+  }
+  shard_node: {
+    shape: package
+    style: {
+      stroke: "#2563EB"
+      stroke-width: 2
+      border-radius: 6
+      fill: "#EFF6FF"
+    }
+  }
+  phase2_node: {
+    shape: rectangle
+    style: {
+      stroke: "#7C3AED"
+      stroke-width: 2
+      stroke-dash: 4
+      border-radius: 6
+      fill: "#F5F3FF"
+    }
+  }
+  native_dep: {
+    shape: cylinder
+    style: {
+      stroke: "#059669"
+      stroke-width: 2
+      fill: "#ECFDF5"
+    }
+  }
+}
+
+harness: "CrystalCryptoSamples Orchestration Harness" {
+  class: tier
+
+  entry: "CrystalCryptoSamples.run_samples(io : IO = STDOUT)" {
+    class: orchestrator
+  }
+
+  phase1: "Phase 1: Five-Shard Demonstrations [v0.3.0]" {
+    class: tier
+
+    cbor: "run_cbor_sample\n[TECH-001], [FUNC-001]" { class: orchestrator }
+    ecc: "run_ecc_sample\n[TECH-002], [FUNC-002]" { class: orchestrator }
+    pqc: "run_pqc_sample\n[TECH-002], [FUNC-003]" { class: orchestrator }
+    dbus: "run_dbus_sample\n[TECH-001], [FUNC-004]" { class: orchestrator }
+    tpm2: "run_tpm2_sample\n[TECH-003], [FUNC-005]" { class: orchestrator }
+  }
+
+  phase2: "Phase 2: Hybrid PQC & CTAP2 Ceremonies [v0.4.0]" {
+    class: tier
+
+    hybrid: "Hybrid KEM & Dual-Signature Combiner\nX25519 + ML-KEM-768 & Ed25519 + ML-DSA-65\n[TECH-006], [FUNC-006]" {
+      class: phase2_node
+    }
+    ctap2: "D-Bus CTAP2 Authenticator Service\n& Rootless Podman Quadlet\n[TECH-007], [FUNC-007]" {
+      class: phase2_node
+    }
+  }
+
+  entry -> phase1
+  entry -> phase2: "Planned v0.4.0" { style.stroke-dash: 4 }
+}
+
+shards: "EVALinux Crypto Suite Shards" {
+  class: tier
+
+  cbor_shard: "crystal-cbor-fido (~> 0.2.1)\nCanonical RFC 8949/CTAP2\nFloat16 & UInt64" {
+    class: shard_node
+  }
+  ecc_shard: "crystal-ecc-constant (~> 0.2.1)\nEd25519 & X25519 ECDH\nGuarded SharedSecret" {
+    class: shard_node
+  }
+  pqc_shard: "crystal-pqc-constant (~> 0.1.0)\nFIPS 203 ML-KEM-768\nFIPS 204 ML-DSA-65" {
+    class: shard_node
+  }
+  dbus_shard: "crystal-dbus-native (~> 0.3.0)\nBodyCodec a{sv}, SASL EXTERNAL\nUNIX FD & Hello" {
+    class: shard_node
+  }
+  tpm2_shard: "crystal-tpm2-tss (~> 0.4.0)\nFIDO2 NV Persistence, P-256 ECDSA\nKDFa XOR & AES-128-CFB" {
+    class: shard_node
+  }
+}
+
+sys_libs: "System Cryptographic & IPC Primitives" {
+  class: tier
+
+  sodium: "libsodium\nsodium_malloc/mprotect_readonly" { class: native_dep }
+  openssl: "OpenSSL 3.5+ libcrypto\nEVP_PKEY ML-KEM, ML-DSA & P-256" { class: native_dep }
+  unix_sock: "Linux Kernel AF_UNIX\nSCM_RIGHTS & Peer Credentials" { class: native_dep }
+}
+
+harness.phase1.cbor -> shards.cbor_shard
+harness.phase1.ecc -> shards.ecc_shard
+harness.phase1.pqc -> shards.pqc_shard
+harness.phase1.dbus -> shards.dbus_shard
+harness.phase1.tpm2 -> shards.tpm2_shard
+
+harness.phase2.hybrid -> shards.ecc_shard: "X25519/Ed25519" { style.stroke-dash: 4 }
+harness.phase2.hybrid -> shards.pqc_shard: "ML-KEM-768/ML-DSA-65" { style.stroke-dash: 4 }
+harness.phase2.hybrid -> shards.cbor_shard: "Canonical Transcript" { style.stroke-dash: 4 }
+
+harness.phase2.ctap2 -> shards.dbus_shard: "D-Bus RPC" { style.stroke-dash: 4 }
+harness.phase2.ctap2 -> shards.cbor_shard: "CTAP2 CBOR" { style.stroke-dash: 4 }
+harness.phase2.ctap2 -> shards.tpm2_shard: "NV & P-256" { style.stroke-dash: 4 }
+harness.phase2.ctap2 -> shards.pqc_shard: "PQC Assertion" { style.stroke-dash: 4 }
+
+shards.ecc_shard -> sys_libs.sodium
+shards.pqc_shard -> sys_libs.sodium
+shards.pqc_shard -> sys_libs.openssl
+shards.tpm2_shard -> sys_libs.openssl
+shards.dbus_shard -> sys_libs.unix_sock

@@ -18,22 +18,22 @@ Documentation Architecture
      - Entrypoint
    * - **Business & Strategy**
      - Cross-shard integration vision, ecosystem validation goals, and user personas.
-     - `Business Specifications <business/spec.rst>`__
+     - :doc:`Business Specifications <business/spec>`
    * - **Functional Specifications**
-     - Requirements ``[FUNC-001]``..``[FUNC-005]`` covering all five shard demonstrations.
-     - `Functional Specifications <functional/spec.rst>`__
+     - Requirements ``[FUNC-001]``..``[FUNC-007]`` covering all five shard demonstrations and Phase 2 hybrid ceremonies.
+     - :doc:`Functional Specifications <functional/spec>`
    * - **Technical Architecture**
-     - Orchestration flow, coding standards, threat model, and release protocol.
-     - `Technical Architecture <technical/spec.rst>`__
+     - Specifications ``[TECH-001]``..``[TECH-007]``, D2 topology, coding standards, threat model, and release protocol.
+     - :doc:`Technical Architecture <technical/spec>`
    * - **Architecture Decisions**
      - Immutable Architecture Decision Records and trade-off analyses.
-     - `Architecture Decisions <adrs/index.rst>`__
+     - :doc:`Architecture Decisions <adrs/index>`
    * - **Project Roadmap**
-     - Sequenced phase milestones, delivery tracking, and verification audits.
-     - `Project Roadmap <project/roadmap.rst>`__
+     - Sequenced phase milestones, ``TASK-101``..``TASK-204`` critical paths, and verification audits.
+     - :doc:`Project Roadmap <project/roadmap>`
    * - **User Guides**
      - Installation, build targets, and CLI execution guide.
-     - `User Manual <user/index.rst>`__
+     - :doc:`User Manual <user/index>`
    * - **Crystal API Reference**
      - Compiler-generated API documentation for ``CrystalCryptoSamples``.
      - `Crystal API Reference <technical/api/index.html>`__

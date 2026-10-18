@@ -5,14 +5,14 @@ Getting Started
 Prerequisites
 -------------
 
-Install ``crystal``, ``shards``, ``openssl-devel`` (>= 3.5), and ``libsodium-devel`` on Fedora Linux:
+Install ``crystal``, ``shards``, ``openssl-devel`` version 3.5 or newer, and ``libsodium-devel`` on Fedora Linux:
 
 .. code-block:: bash
 
    sudo dnf install crystal shards openssl-devel libsodium-devel
 
-Building & Running
-------------------
+Building and Running
+--------------------
 
 .. code-block:: bash
 
