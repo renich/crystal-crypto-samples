@@ -1,6 +1,6 @@
-=============================================================
+==============================================================
 Phase 2: Crucible Protocol Refactoring & Release Stabilization
-=============================================================
+==============================================================
 
 Status: Completed
 Target Version: 0.1.1
@@ -11,6 +11,7 @@ Align dependencies and build pipelines across the full crypto suite with zero li
 
 Milestones & Deliverables
 =========================
+
 * **[SAMP-006] Dependency Synchronization**: Link and resolve local component dependencies against refactored upstream shards.
 * **[SAMP-007] Static Analysis Tooling**: Integrate ``flaw`` and ``ameba`` into development dependencies and build recipes.
 * **[SAMP-008] GNUmakefile Path Correction**: Correct doc installation paths to ``$(DATADIR)/doc/crystal-crypto-samples/``.

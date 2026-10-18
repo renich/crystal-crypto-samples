@@ -1,2 +1,2 @@
 require "spec"
-require "../src/crypto_samples"
+require "../src/crystal_crypto_samples"

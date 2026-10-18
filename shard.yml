@@ -1,8 +1,10 @@
 name: crystal-crypto-samples
-version: 0.1.2
+version: 0.2.0
 
 authors:
   - Rénich Bon Ćirić <renich@woralelandia.com>
+
+crystal: '>= 1.21.0'
 
 license: GPL-3.0-or-later
 
@@ -12,17 +14,17 @@ targets:
 
 dependencies:
   crystal-cbor-fido:
-    github: renich/crystal-cbor-fido
-    branch: master
+    gitlab: renich/crystal-cbor-fido
+    version: ~> 0.2.0
   crystal-dbus-native:
-    github: renich/crystal-dbus-native
-    branch: master
+    gitlab: renich/crystal-dbus-native
+    version: ~> 0.2.0
   crystal-ecc-constant:
-    github: renich/crystal-ecc-constant
-    branch: master
+    gitlab: renich/crystal-ecc-constant
+    version: ~> 0.2.0
   crystal-tpm2-tss:
-    github: renich/crystal-tpm2-tss
-    branch: master
+    gitlab: renich/crystal-tpm2-tss
+    version: ~> 0.3.0
 
 development_dependencies:
   ameba:
@@ -30,4 +32,3 @@ development_dependencies:
     branch: master
   flaw:
     github: kdairatchi/flaw
-

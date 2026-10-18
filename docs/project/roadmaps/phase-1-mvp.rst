@@ -1,6 +1,6 @@
-===================================================
+==================================================
 Phase 1: Crypto Suite End-to-End Sample Runner MVP
-===================================================
+==================================================
 
 Status: Completed
 Target Version: 0.1.0
@@ -11,6 +11,7 @@ Develop an end-to-end sample application orchestrating CBOR-FIDO, ECC-Constant, 
 
 Milestones & Deliverables
 =========================
+
 * **[SAMP-001] Component Integration**: Import and wire all 4 crypto libraries.
 * **[SAMP-002] CBOR-FIDO Demonstration**: Demonstrate map encoding and decoding.
 * **[SAMP-003] ECC Detached Signing**: Demonstrate Ed25519 key generation, message signing, and signature verification.
