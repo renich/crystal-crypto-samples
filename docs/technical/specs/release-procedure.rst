@@ -5,7 +5,7 @@ Release Procedure
 Requirement Mapping
 -------------------
 
-Fulfills ``[FUNC-001]``, ``[FUNC-002]``, ``[FUNC-003]``, ``[FUNC-004]``, ``[FUNC-005]`` defined in :doc:`../../functional/specs/core-requirements`.
+Fulfills ``[FUNC-001]``, ``[FUNC-002]``, ``[FUNC-003]``, ``[FUNC-004]``, ``[FUNC-005]``, ``[FUNC-006]``, ``[FUNC-007]`` defined in :doc:`../../functional/specs/core-requirements`.
 
 Release Engineering Checklist
 -----------------------------

@@ -2,7 +2,7 @@
 Phase 2: Hybrid Classical-PQC Ceremonies
 ========================================
 
-- **Status**: Planned Target for ``v0.4.0``
+- **Status**: Completed in ``v0.3.1``
 - **Target Scope**: ``[FUNC-006]``, ``[FUNC-007]``, ``[TECH-005]``, ``[TECH-006]``, ``[TECH-007]``
 
 Phase 2 Dependency Graph
@@ -20,7 +20,7 @@ Deliver a composite classical and post-quantum key agreement and dual-signature 
 ``TASK-201`` Hybrid X25519 and ML-KEM-768 Key Encapsulation Combiner
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* **Status**: Planned ``[ ]``
+* **Status**: Completed ``[x]``
 * **Fulfills**: ``[FUNC-006]``, ``[TECH-005]``, ``[TECH-006]``
 * **Blocked By**: Phase 1 ``TASK-105``
 * **Unblocks**: ``TASK-202``, ``TASK-203``
@@ -29,7 +29,7 @@ Deliver a composite classical and post-quantum key agreement and dual-signature 
 ``TASK-202`` Composite Ed25519 and ML-DSA-65 Dual Signatures in Canonical CBOR
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* **Status**: Planned ``[ ]``
+* **Status**: Completed ``[x]``
 * **Fulfills**: ``[FUNC-006]``, ``[TECH-005]``, ``[TECH-006]``
 * **Blocked By**: ``TASK-201``
 * **Unblocks**: ``TASK-204``
@@ -43,7 +43,7 @@ Deliver an in-memory D-Bus CTAP2 authenticator service loop combining all five s
 ``TASK-203`` End-to-End D-Bus CTAP2 Authenticator Service Loop
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* **Status**: Planned ``[ ]``
+* **Status**: Completed ``[x]``
 * **Fulfills**: ``[FUNC-007]``, ``[TECH-005]``, ``[TECH-007]``
 * **Blocked By**: ``TASK-201``
 * **Unblocks**: ``TASK-204``
@@ -52,10 +52,10 @@ Deliver an in-memory D-Bus CTAP2 authenticator service loop combining all five s
 ``TASK-204`` Rootless Podman Containerfile and Systemd Quadlet Integration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-* **Status**: Planned ``[ ]``
+* **Status**: Completed ``[x]``
 * **Fulfills**: ``[FUNC-007]``, ``[TECH-005]``, ``[TECH-007]``
 * **Blocked By**: ``TASK-202``, ``TASK-203``
-* **Unblocks**: Release ``v0.4.0``
+* **Unblocks**: Release ``v0.3.1``
 * **Deliverables**: Author ``containers/Containerfile`` and ``containers/crystal-crypto-samples.container`` systemd Quadlet unit aligned with ``../init/app``, and add ``containers-build`` and ``containers-run`` targets to ``GNUmakefile``.
 
 Critical Path

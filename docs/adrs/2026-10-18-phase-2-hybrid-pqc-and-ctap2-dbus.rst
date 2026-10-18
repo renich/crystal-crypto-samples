@@ -18,7 +18,7 @@ Phase 1 ``v0.3.0`` established isolated demonstrations for each of the five shar
 Decision
 --------
 
-We will expand ``crystal-crypto-samples`` in Phase 2 ``v0.4.0`` with two cross-shard orchestration modules and container deployment manifests:
+We will expand ``crystal-crypto-samples`` in Phase 2 ``v0.3.1`` with two cross-shard orchestration modules and container deployment manifests:
 
 #. Implement ``CrystalCryptoSamples.run_hybrid_pqc_sample`` fulfilling ``[FUNC-006]``, ``[TECH-005]``, and ``[TECH-006]``:
 

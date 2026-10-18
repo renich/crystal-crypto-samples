@@ -40,23 +40,23 @@ Phase 1 Baseline Requirements for v0.3.0
 
 * **Fulfilled By**: ``[TECH-003]``, ``[TECH-004]``, ``[TECH-005]`` in :doc:`../../technical/specs/architecture-overview`, :doc:`../../technical/specs/coding-standards`, and :doc:`../../technical/specs/threat-model`.
 
-Phase 2 Target Requirements for v0.4.0
+Phase 2 Target Requirements for v0.3.1
 --------------------------------------
 
 ``[FUNC-006]`` Hybrid Classical and Post-Quantum Cryptographic Ceremony
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The harness must provide ``CrystalCryptoSamples.run_hybrid_pqc_sample(io : IO = STDOUT) : Nil`` in Phase 2 ``v0.4.0``. It must execute a composite key encapsulation ceremony combining classical ``X25519`` ECDH from ``crystal-ecc-constant`` with post-quantum NIST FIPS 203 ``ML-KEM-768`` from ``crystal-pqc-constant``, and a dual-signature assertion combining ``Ed25519`` with NIST FIPS 204 ``ML-DSA-65``:
+The harness must provide ``CrystalCryptoSamples.run_hybrid_pqc_sample(io : IO = STDOUT) : Nil`` in Phase 2 ``v0.3.1``. It must execute a composite key encapsulation ceremony combining classical ``X25519`` ECDH from ``crystal-ecc-constant`` with post-quantum NIST FIPS 203 ``ML-KEM-768`` from ``crystal-pqc-constant``, and a dual-signature assertion combining ``Ed25519`` with NIST FIPS 204 ``ML-DSA-65``:
 
-#. **Canonical CBOR Public-Key Transcript Schema**: Encode the integer-keyed canonical CBOR map ``{1_i64 => "EVALINUX-HYBRID-V1", 2_i64 => x25519_pub, 3_i64 => mlkem768_pub, 4_i64 => mlkem768_ct}`` into ``transcript_cbor`` via ``Crystal::Cbor::Fido.encode``.
-#. **Hybrid KDF Combiner**: Derive the 32-byte hybrid session key inside nested ``SharedSecret#consume`` blocks using the exact domain-separated SHA-256 construction ``SHA256("EVALINUX-HYBRID-KEM-V1" || x25519_ss || mlkem768_ss || transcript_cbor)`` and verify initiator/responder agreement via ``Sodium.constant_time_equal?`` without exposing raw shared secret bytes outside guarded memory.
+#. **Canonical CBOR Public-Key Transcript Schema**: Encode the integer-keyed canonical CBOR map ``{1_i64 => "EVALINUX-HYBRID-V1", 2_i64 => x25519_pub, 3_i64 => mlkem768_pub, 4_i64 => mlkem768_ct}``—where ``x25519_pub`` binds both peers' concatenated 32-byte ``X25519`` public keys—into ``transcript_cbor`` via ``Crystal::Cbor::Fido.encode``.
+#. **Hybrid KDF Combiner**: Derive the 32-byte hybrid session key inside nested ``SharedSecret#consume`` blocks into a guarded ``SecureBuffer`` using the exact domain-separated SHA-256 construction ``SHA256("EVALINUX-HYBRID-KEM-V1" || x25519_ss || mlkem768_ss || transcript_cbor)`` and verify initiator/responder agreement via ``Sodium.constant_time_equal?`` without exposing raw shared secret bytes outside guarded memory.
 #. **Canonical CBOR Dual-Signature Assertion Schema**: Sign ``transcript_cbor`` with both ``Ed25519KeyPair#sign`` and ``MLDSAKeyPair#sign``, encode the assertion map ``{1_i64 => transcript_cbor, 2_i64 => ed25519_sig, 3_i64 => mldsa65_sig}`` via ``Crystal::Cbor::Fido.encode``, decode it via ``Crystal::Cbor::Fido.decode``, and verify both signatures deterministically.
 
-* **Fulfilled By**: ``[TECH-005]``, ``[TECH-006]`` in :doc:`../../technical/specs/architecture-overview` and :doc:`../../technical/specs/threat-model`.
+* **Fulfilled By**: ``[TECH-004]``, ``[TECH-005]``, ``[TECH-006]`` in :doc:`../../technical/specs/architecture-overview`, :doc:`../../technical/specs/coding-standards`, and :doc:`../../technical/specs/threat-model`.
 
 ``[FUNC-007]`` End-to-End D-Bus CTAP2 Authenticator Ceremony and Rootless Podman Packaging
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The harness must provide ``CrystalCryptoSamples.run_ctap2_dbus_sample(io : IO = STDOUT) : Nil`` and container deployment artifacts in Phase 2 ``v0.4.0``. A client fiber must serialize a canonical CBOR ``authenticatorMakeCredential`` and ``authenticatorGetAssertion`` request via ``crystal-cbor-fido``, invoke the D-Bus method ``MakeCredential`` on object path ``/org/evalinux/Ctap2Authenticator1`` and interface ``org.evalinux.Ctap2Authenticator1`` with D-Bus signature ``ay`` returning ``ay`` over an authenticated ``crystal-dbus-native`` connection, and process the request in a responder fiber backed by ``crystal-tpm2-tss`` hardware-bound NIST P-256 credentials and ``crystal-pqc-constant`` ``ML-DSA-65`` attestation signatures. Additionally, the repository must provide a multi-stage rootless ``containers/Containerfile`` and systemd Quadlet unit following the ``../init/app`` operational blueprint.
+The harness must provide ``CrystalCryptoSamples.run_ctap2_dbus_sample(io : IO = STDOUT) : Nil`` and container deployment artifacts in Phase 2 ``v0.3.1``. A client fiber must serialize a canonical CBOR ``authenticatorMakeCredential`` request via ``crystal-cbor-fido``, invoke the D-Bus method ``MakeCredential`` on object path ``/org/evalinux/Ctap2Authenticator1`` and interface ``org.evalinux.Ctap2Authenticator1`` with D-Bus signature ``ay`` returning ``ay`` over an authenticated ``crystal-dbus-native`` connection, and process the request in a responder fiber backed by ``crystal-tpm2-tss`` hardware-bound NIST P-256 credentials and ``crystal-pqc-constant`` ``ML-DSA-65`` attestation signatures returning keys ``1``..``6`` (credential ID, ECDSA ``r``/``s``, ``ML-DSA-65`` signature, and NIST P-256 ``public_key_x``/``public_key_y`` coordinates). Additionally, the repository must provide a multi-stage rootless ``containers/Containerfile`` and systemd Quadlet unit following the ``../init/app`` operational blueprint.
 
-* **Fulfilled By**: ``[TECH-005]``, ``[TECH-007]`` in :doc:`../../technical/specs/architecture-overview` and :doc:`../../technical/specs/threat-model`.
+* **Fulfilled By**: ``[TECH-004]``, ``[TECH-005]``, ``[TECH-007]`` in :doc:`../../technical/specs/architecture-overview`, :doc:`../../technical/specs/coding-standards`, and :doc:`../../technical/specs/threat-model`.

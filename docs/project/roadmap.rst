@@ -27,7 +27,7 @@ Phase Summary
      - Five-Shard Suite Orchestrator, guarded memory disposal, secret redaction, and ``IO::Memory`` spec harness
      - ``[FUNC-001]``..``[FUNC-005]``, ``[TECH-001]``..``[TECH-005]``
    * - :doc:`roadmaps/phase-2-enhancement`
-     - Planned ``v0.4.0``
+     - Completed ``v0.3.1``
      - Hybrid ``X25519 + ML-KEM-768`` and ``Ed25519 + ML-DSA-65`` CBOR ceremony, D-Bus CTAP2 authenticator service, and rootless Podman Quadlet
      - ``[FUNC-006]``, ``[FUNC-007]``, ``[TECH-005]``, ``[TECH-006]``, ``[TECH-007]``
 

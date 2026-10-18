@@ -1,0 +1,49 @@
+# Stage 1: Build crystal-crypto-samples binary on Fedora with OpenSSL 3.5+ and libsodium
+FROM registry.fedoraproject.org/fedora:latest AS builder
+
+WORKDIR /build
+
+RUN dnf install -y --nodocs \
+    crystal \
+    shards \
+    gcc \
+    git \
+    make \
+    libsodium-devel \
+    openssl-devel \
+    pcre2-devel \
+    gc-devel \
+    libevent-devel \
+    libyaml-devel && \
+    dnf clean all
+
+COPY shard.yml ./
+RUN shards install --production
+
+COPY src/ ./src/
+RUN crystal build src/crystal_crypto_samples.cr -o bin/crystal-crypto-samples \
+    --release \
+    --no-debug && \
+    strip --strip-all bin/crystal-crypto-samples
+
+# Stage 2: Hardened rootless runtime image
+FROM registry.fedoraproject.org/fedora-minimal:latest
+
+RUN microdnf install -y --nodocs \
+    libsodium \
+    openssl-libs \
+    pcre2 \
+    gc \
+    libevent \
+    libyaml && \
+    microdnf clean all && \
+    groupadd -r -g 10001 appgroup && \
+    useradd -r -u 10001 -g appgroup -d /app -s /sbin/nologin appuser
+
+WORKDIR /app
+
+COPY --from=builder --chown=10001:10001 /build/bin/crystal-crypto-samples /usr/local/bin/crystal-crypto-samples
+
+USER 10001:10001
+
+ENTRYPOINT ["/usr/local/bin/crystal-crypto-samples"]

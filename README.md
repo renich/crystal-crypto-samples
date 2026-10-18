@@ -2,10 +2,10 @@
 
 **End-to-end integration harness and demonstration suite for the EVALinux Crypto Suite (CBOR FIDO, ECC Constant, PQC Constant, DBus Native, and TPM2 TSS).**
 
-[![Version 0.3.0](https://img.shields.io/badge/version-v0.3.0-blue.svg?style=flat-square)](https://gitlab.com/renich/crystal-crypto-samples/-/releases)
+[![Version 0.3.1](https://img.shields.io/badge/version-v0.3.1-blue.svg?style=flat-square)](https://gitlab.com/renich/crystal-crypto-samples/-/releases)
 [![Crystal >= 1.21.0](https://img.shields.io/badge/crystal-%3E%3D%201.21.0-black.svg?style=flat-square&logo=crystal&logoColor=white)](https://crystal-lang.org/)
 [![GitLab CI Passing](https://img.shields.io/badge/pipeline-passing-brightgreen.svg?style=flat-square&logo=gitlab)](https://gitlab.com/renich/crystal-crypto-samples/-/pipelines)
-[![Specs Passing](https://img.shields.io/badge/specs-7%20passing-success.svg?style=flat-square&logo=crystal)](https://gitlab.com/renich/crystal-crypto-samples)
+[![Specs Passing](https://img.shields.io/badge/specs-11%20passing-success.svg?style=flat-square&logo=crystal)](https://gitlab.com/renich/crystal-crypto-samples)
 [![Ameba Clean](https://img.shields.io/badge/ameba-0%20violations-brightgreen.svg?style=flat-square)](https://github.com/crystal-ameba/ameba)
 [![Flaw Clean](https://img.shields.io/badge/flaw-0%20findings-brightgreen.svg?style=flat-square)](https://github.com/kdairatchi/flaw)
 
@@ -24,17 +24,17 @@
 
 This sample application dynamically links and demonstrates the capabilities of our five standalone shards:
 
-- **[Crystal CBOR FIDO](https://gitlab.com/renich/crystal-cbor-fido)** (`~> 0.2.1`): Memory-safe Canonical CBOR (RFC 8949 §4.2/CTAP2 §6) encoder and decoder with canonical IEEE 754 float narrowing and trailing-byte rejection.
-- **[Crystal DBus Native](https://gitlab.com/renich/crystal-dbus-native)** (`~> 0.3.0`): Native, zero-dependency D-Bus wire protocol featuring general-purpose `BodyCodec` (`Variant`, `StructValue`, `a{sv}`), `HeaderCodec`, SASL `EXTERNAL` authentication, and `SCM_RIGHTS` file descriptor passing.
-- **[Crystal ECC Constant](https://gitlab.com/renich/crystal-ecc-constant)** (`~> 0.2.1`): Strictly constant-time classical Elliptic Curve Cryptography (`Ed25519` signatures and `X25519` ECDH) backed by `libsodium` secure memory and `sodium_mprotect_readonly` page protection.
-- **[Crystal PQC Constant](https://gitlab.com/renich/crystal-pqc-constant)** (`~> 0.1.0`): Constant-time Post-Quantum Cryptography implementing NIST FIPS 203 `ML-KEM` (`ML-KEM-512`, `ML-KEM-768`, `ML-KEM-1024`) and NIST FIPS 204 `ML-DSA` (`ML-DSA-44`, `ML-DSA-65`, `ML-DSA-87`) backed by OpenSSL 3.5+ `EVP_PKEY` and `libsodium` guarded memory.
-- **[Crystal TPM2 TSS](https://gitlab.com/renich/crystal-tpm2-tss)** (`~> 0.4.0`): Native TPM 2.0 Software Stack featuring hardware NV storage key persistence, real OpenSSL 3.5 NIST P-256 key generation and ECDSA verification (`TPM2_ReadPublic`), KDFa `XOR` and `AES-128-CFB` parameter encryption, TCG `cpHash`/`rpHash` calculation, and $\mathcal{O}(1)$ atomic nonce-reuse detection.
+- **[Crystal CBOR FIDO](https://gitlab.com/renich/crystal-cbor-fido)** (`~> 0.2.2`): Memory-safe Canonical CBOR (RFC 8949 §4.2/CTAP2 §6) encoder and decoder with canonical IEEE 754 float narrowing, COSE/WebAuthn structures, and trailing-byte rejection.
+- **[Crystal DBus Native](https://gitlab.com/renich/crystal-dbus-native)** (`~> 0.3.1`): Native, zero-dependency D-Bus wire protocol featuring general-purpose `BodyCodec` (`Variant`, `StructValue`, `a{sv}`), `HeaderCodec`, SASL `EXTERNAL` authentication, and `SCM_RIGHTS` file descriptor passing.
+- **[Crystal ECC Constant](https://gitlab.com/renich/crystal-ecc-constant)** (`~> 0.2.2`): Strictly constant-time classical Elliptic Curve Cryptography (`Ed25519`, `Ed25519ph`, `X25519` ECDH, and `BLAKE2b` KDF) backed by `libsodium` secure memory and `sodium_mprotect_readonly` page protection.
+- **[Crystal PQC Constant](https://gitlab.com/renich/crystal-pqc-constant)** (`~> 0.1.1`): Constant-time Post-Quantum Cryptography implementing NIST FIPS 203 `ML-KEM` (`ML-KEM-512`, `ML-KEM-768`, `ML-KEM-1024`) and NIST FIPS 204 `ML-DSA` (`ML-DSA-44`, `ML-DSA-65`, `ML-DSA-87`) backed by OpenSSL 3.5+ `EVP_PKEY` and `libsodium` guarded memory.
+- **[Crystal TPM2 TSS](https://gitlab.com/renich/crystal-tpm2-tss)** (`~> 0.4.1`): Native TPM 2.0 Software Stack featuring hardware NV storage key persistence, real OpenSSL 3.5 NIST P-256 key generation and ECDSA verification (`TPM2_ReadPublic`), KDFa `XOR` and `AES-128-CFB` parameter encryption, TCG `cpHash`/`rpHash` calculation, and $\mathcal{O}(1)$ atomic nonce-reuse detection.
 
 ---
 
 ## Post-Quantum Cryptography in the Suite
 
-Post-Quantum Cryptography (PQC) is provided as a dedicated, standalone shard—**[crystal-pqc-constant](https://gitlab.com/renich/crystal-pqc-constant)**—and demonstrated directly in `CrystalCryptoSamples.run_pqc_sample`:
+Post-Quantum Cryptography (PQC) is provided as a dedicated, standalone shard—**[crystal-pqc-constant](https://gitlab.com/renich/crystal-pqc-constant)**—and demonstrated directly in `CrystalCryptoSamples.run_pqc_sample`, `run_hybrid_pqc_sample`, and `run_ctap2_dbus_sample`:
 
 - **Why PQC Is Required**: Classical public-key algorithms (`Ed25519` and `X25519` in `crystal-ecc-constant`, as well as hardware-bound `NIST P-256` in `crystal-tpm2-tss`) rely on the hardness of the Elliptic Curve Discrete Logarithm Problem (ECDLP). A Cryptographically Relevant Quantum Computer (CRQC) executing Shor's algorithm can solve ECDLP in polynomial time, threatening both historical key-agreement transcripts ("harvest now, decrypt later") and long-lived digital signatures.
 - **NIST FIPS 203 `ML-KEM` Key Encapsulation**: `Crystal::Pqc::Constant::MLKEMKeyPair` implements Module-Lattice-Based Key-Encapsulation (`MLKEM512`, `MLKEM768`, `MLKEM1024`) based on the hardness of the Module Learning With Errors (MLWE) problem over polynomial rings. Decapsulation uses **implicit rejection**—deriving a pseudorandom fallback secret rather than branching or returning an error when a ciphertext is tampered—eliminating adaptive chosen-ciphertext timing side channels.
@@ -65,13 +65,15 @@ make build
 ./bin/crystal-crypto-samples
 ```
 
-The sample runner executes five self-contained integration demonstrations:
+The sample runner executes seven self-contained integration demonstrations:
 
 1. **CBOR FIDO (`run_cbor_sample`)**: Canonical map key ordering, `UInt64` serialization, and canonical IEEE 754 `Float16` narrowing (`1.5_f64` -> `f93e00`).
 2. **ECC Constant (`run_ecc_sample`)**: Constant-time `Ed25519` detached signatures and mutual `X25519` ECDH shared secret agreement (`SharedSecret#consume` + `Sodium.constant_time_equal?`) with deterministic `sodium_malloc` disposal.
-3. **PQC Constant (`run_pqc_sample`)**: Post-quantum NIST FIPS 203 `ML-KEM-768` key encapsulation (`1,184`-byte public key, `1,088`-byte ciphertext, `32`-byte shared secret) and NIST FIPS 204 `ML-DSA-65` lattice signature generation and verification (`1,952`-byte public key, `3,309`-byte signature).
-4. **DBus Native (`run_dbus_sample`)**: Recursive `SignatureValidator.validate("a{sv}")`, `BodyCodec` `a{sv}` dictionary marshaling/unmarshaling, SASL `EXTERNAL` authentication, `NEGOTIATE_UNIX_FD` negotiation, and full `org.freedesktop.DBus.Hello` bus registration.
-5. **TPM2 TSS (`run_tpm2_sample`)**: Stateful `FIDO2CredentialManager` dynamic NV handle persistence, real OpenSSL 3.5 NIST P-256 public key extraction (`TPM2_ReadPublic`) and ECDSA `(r, s)` signature verification (`FIDO2Credential#verify`) with $\mathcal{O}(1)$ `SignatureRTracker` nonce-reuse verification, plus KDFa `XOR` and `AES-128-CFB` parameter encryption roundtrips.
+3. **DBus Native (`run_dbus_sample`)**: Recursive `SignatureValidator.validate("a{sv}")`, `BodyCodec` `a{sv}` dictionary marshaling/unmarshaling, SASL `EXTERNAL` authentication, `NEGOTIATE_UNIX_FD` negotiation, and full `org.freedesktop.DBus.Hello` bus registration.
+4. **TPM2 TSS (`run_tpm2_sample`)**: Stateful `FIDO2CredentialManager` dynamic NV handle persistence, real OpenSSL 3.5 NIST P-256 public key extraction (`TPM2_ReadPublic`) and ECDSA `(r, s)` signature verification (`FIDO2Credential#verify`) with $\mathcal{O}(1)$ `SignatureRTracker` nonce-reuse verification, plus KDFa `XOR` and `AES-128-CFB` parameter encryption roundtrips.
+5. **PQC Constant (`run_pqc_sample`)**: Post-quantum NIST FIPS 203 `ML-KEM-768` key encapsulation (`1,184`-byte public key, `1,088`-byte ciphertext, `32`-byte shared secret) and NIST FIPS 204 `ML-DSA-65` lattice signature generation and verification (`1,952`-byte public key, `3,309`-byte signature).
+6. **Hybrid Classical-PQC Ceremony (`run_hybrid_pqc_sample`)**: Composite `X25519 + ML-KEM-768` SHA-256 KDF session key combiner (`SHA256("EVALINUX-HYBRID-KEM-V1" || x25519_ss || mlkem768_ss || transcript_cbor)`) inside nested `SharedSecret#consume` blocks and dual `Ed25519 + ML-DSA-65` signature generation and verification over canonical integer-keyed CBOR maps.
+7. **End-to-End D-Bus CTAP2 Authenticator (`run_ctap2_dbus_sample`)**: Full D-Bus CTAP2 `MakeCredential` RPC (`ay` -> `ay`) over `/org/evalinux/Ctap2Authenticator1` (`org.evalinux.Ctap2Authenticator1`) serviced by a `FIDO2CredentialManager` (NIST P-256) and `MLDSAKeyPair` (`ML-DSA-65`) responder fiber.
 
 ---
 
@@ -88,6 +90,8 @@ The repository includes a standard FHS-compliant `GNUmakefile`:
 | `make doc-check` | Validates all reStructuredText files with `crstlint` and `rstcheck` |
 | `make check` | Aggregates `lint`, `test`, and `doc-check` quality gates |
 | `make docs` | Generates Crystal API docs and Sphinx `dirhtml` documentation portal |
+| `make containers-build` | Builds rootless Podman container image from `containers/Containerfile` |
+| `make containers-run` | Runs containerized sample suite under rootless Podman |
 | `make install` | Installs binary and documentation to `$(DESTDIR)$(PREFIX)` |
 | `make clean` | Removes build artifacts and generated documentation |
 | `make distclean` | Removes all build outputs and installed shard dependencies |

@@ -1,6 +1,11 @@
 # GNUmakefile for Sphinx Documentation Suite
-SHELL := /bin/bash
-.SHELLFLAGS := -ec
+SHELL := /usr/bin/bash
+.SHELLFLAGS := -euo pipefail -c
+.ONESHELL:
+.DELETE_ON_ERROR:
+.SUFFIXES:
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
 
 SPHINXBUILD ?= sphinx-build
 SPHINXAUTOBUILD ?= sphinx-autobuild
@@ -17,7 +22,7 @@ all: dirhtml
 # Build clean directory HTML documentation using Sphinx dirhtml builder
 dirhtml: $(BUILDDIR)/index.html
 
-$(BUILDDIR)/index.html: $(shell find . -maxdepth 3 -name '*.rst' -o -name '*.py' 2>/dev/null)
+$(BUILDDIR)/index.html: $(shell find . -maxdepth 3 -path './build' -prune -o \( -name '*.rst' -o -name '*.py' \) -print 2>/dev/null)
 	@echo "==> Building Sphinx documentation with dirhtml builder..."
 	$(SPHINXBUILD) -b dirhtml "$(SOURCEDIR)" "$(BUILDDIR)"
 	@touch $@

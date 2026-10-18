@@ -42,7 +42,6 @@ classes: {
     style: {
       stroke: "#7C3AED"
       stroke-width: 2
-      stroke-dash: 4
       border-radius: 6
       fill: "#F5F3FF"
     }
@@ -74,7 +73,7 @@ harness: "CrystalCryptoSamples Orchestration Harness" {
     tpm2: "run_tpm2_sample\n[TECH-003], [FUNC-005]" { class: orchestrator }
   }
 
-  phase2: "Phase 2: Hybrid PQC & CTAP2 Ceremonies [v0.4.0]" {
+  phase2: "Phase 2: Hybrid PQC & CTAP2 Ceremonies [v0.3.1]" {
     class: tier
 
     hybrid: "Hybrid KEM & Dual-Signature Combiner\nX25519 + ML-KEM-768 & Ed25519 + ML-DSA-65\n[TECH-006], [FUNC-006]" {
@@ -86,25 +85,25 @@ harness: "CrystalCryptoSamples Orchestration Harness" {
   }
 
   entry -> phase1
-  entry -> phase2: "Planned v0.4.0" { style.stroke-dash: 4 }
+  entry -> phase2
 }
 
 shards: "EVALinux Crypto Suite Shards" {
   class: tier
 
-  cbor_shard: "crystal-cbor-fido (~> 0.2.1)\nCanonical RFC 8949/CTAP2\nFloat16 & UInt64" {
+  cbor_shard: "crystal-cbor-fido (~> 0.2.2)\nCanonical RFC 8949/CTAP2\nFloat16, COSE & UInt64" {
     class: shard_node
   }
-  ecc_shard: "crystal-ecc-constant (~> 0.2.1)\nEd25519 & X25519 ECDH\nGuarded SharedSecret" {
+  ecc_shard: "crystal-ecc-constant (~> 0.2.2)\nEd25519, Ed25519ph & X25519\nGuarded SharedSecret & KDF" {
     class: shard_node
   }
-  pqc_shard: "crystal-pqc-constant (~> 0.1.0)\nFIPS 203 ML-KEM-768\nFIPS 204 ML-DSA-65" {
+  pqc_shard: "crystal-pqc-constant (~> 0.1.1)\nFIPS 203 ML-KEM-768\nFIPS 204 ML-DSA-65" {
     class: shard_node
   }
-  dbus_shard: "crystal-dbus-native (~> 0.3.0)\nBodyCodec a{sv}, SASL EXTERNAL\nUNIX FD & Hello" {
+  dbus_shard: "crystal-dbus-native (~> 0.3.1)\nBodyCodec a{sv}, SASL EXTERNAL\nUNIX FD & Hello" {
     class: shard_node
   }
-  tpm2_shard: "crystal-tpm2-tss (~> 0.4.0)\nFIDO2 NV Persistence, P-256 ECDSA\nKDFa XOR & AES-128-CFB" {
+  tpm2_shard: "crystal-tpm2-tss (~> 0.4.1)\nFIDO2 NV Persistence, P-256 ECDSA\nKDFa XOR & AES-128-CFB" {
     class: shard_node
   }
 }
@@ -123,14 +122,14 @@ harness.phase1.pqc -> shards.pqc_shard
 harness.phase1.dbus -> shards.dbus_shard
 harness.phase1.tpm2 -> shards.tpm2_shard
 
-harness.phase2.hybrid -> shards.ecc_shard: "X25519/Ed25519" { style.stroke-dash: 4 }
-harness.phase2.hybrid -> shards.pqc_shard: "ML-KEM-768/ML-DSA-65" { style.stroke-dash: 4 }
-harness.phase2.hybrid -> shards.cbor_shard: "Canonical Transcript" { style.stroke-dash: 4 }
+harness.phase2.hybrid -> shards.ecc_shard: "X25519/Ed25519"
+harness.phase2.hybrid -> shards.pqc_shard: "ML-KEM-768/ML-DSA-65"
+harness.phase2.hybrid -> shards.cbor_shard: "Canonical Transcript"
 
-harness.phase2.ctap2 -> shards.dbus_shard: "D-Bus RPC" { style.stroke-dash: 4 }
-harness.phase2.ctap2 -> shards.cbor_shard: "CTAP2 CBOR" { style.stroke-dash: 4 }
-harness.phase2.ctap2 -> shards.tpm2_shard: "NV & P-256" { style.stroke-dash: 4 }
-harness.phase2.ctap2 -> shards.pqc_shard: "PQC Assertion" { style.stroke-dash: 4 }
+harness.phase2.ctap2 -> shards.dbus_shard: "D-Bus RPC"
+harness.phase2.ctap2 -> shards.cbor_shard: "CTAP2 CBOR"
+harness.phase2.ctap2 -> shards.tpm2_shard: "NV & P-256"
+harness.phase2.ctap2 -> shards.pqc_shard: "PQC Assertion"
 
 shards.ecc_shard -> sys_libs.sodium
 shards.pqc_shard -> sys_libs.sodium

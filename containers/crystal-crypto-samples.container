@@ -1,0 +1,19 @@
+[Unit]
+Description=EVALinux Crystal Crypto Samples Harness
+
+[Container]
+Image=localhost/crystal-crypto-samples:latest
+ContainerName=crystal-crypto-samples
+UserNS=keep-id:uid=10001,gid=10001
+NoNewPrivileges=true
+ReadOnly=true
+DropCapability=ALL
+Tmpfs=/tmp:rw,noexec,nosuid,nodev,size=64m
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+TimeoutStartSec=60
+
+[Install]
+WantedBy=default.target

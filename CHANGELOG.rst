@@ -10,12 +10,20 @@ and this project adheres to `Semantic Versioning <https://semver.org/spec/v2.0.0
 [Unreleased]
 ============
 
+[0.3.1] - 2026-10-18
+====================
+
 .. rubric:: Added
 
-- Added Phase 2 ``v0.4.0`` functional and technical specifications ``[FUNC-006]``, ``[FUNC-007]``, ``[TECH-006]``, and ``[TECH-007]`` plus ``ADR-002`` covering hybrid ``X25519 + ML-KEM-768`` and ``Ed25519 + ML-DSA-65`` canonical CBOR ceremonies, D-Bus CTAP2 authenticator service loops, and rootless Podman Quadlet packaging.
-- Added dependency-tracked phased roadmaps with atomic tasks ``TASK-101``..``TASK-105`` and ``TASK-201``..``TASK-204``, blocker mappings, and explicit critical paths.
-- Added declarative D2 architecture and roadmap diagrams in ``docs/diagrams/`` compiled to SVG and embedded into Sphinx technical and roadmap specifications.
-- Added ``assets/banner.svg`` and ``assets/icon.svg`` visual identity assets and aligned ``README.md`` and ``CONTRIBUTING.rst`` with the ``../init`` blueprint standard.
+- Added ``CrystalCryptoSamples.run_hybrid_pqc_sample`` and ``CrystalCryptoSamples::HybridCeremony`` demonstrating a composite ``X25519 + ML-KEM-768`` SHA-256 KDF combiner (``SHA256("EVALINUX-HYBRID-KEM-V1" || x25519_ss || mlkem768_ss || transcript_cbor)``) and ``Ed25519 + ML-DSA-65`` dual signatures over canonical integer-keyed CBOR transcripts (``[FUNC-006]``, ``[TECH-005]``, ``[TECH-006]``).
+- Added ``CrystalCryptoSamples.run_ctap2_dbus_sample`` and ``CrystalCryptoSamples::Ctap2DbusCeremony`` demonstrating an end-to-end D-Bus CTAP2 ``MakeCredential`` RPC (signature ``ay`` -> ``ay``) over ``/org/evalinux/Ctap2Authenticator1`` (``org.evalinux.Ctap2Authenticator1``) backed by ``Crystal::Tpm2::Tss::FIDO2CredentialManager`` and ``Crystal::Pqc::Constant::MLDSAKeyPair`` (``[FUNC-007]``, ``[TECH-005]``, ``[TECH-007]``).
+- Added ``CrystalCryptoSamples.run_all`` alias executing all seven Phase 1 and Phase 2 cryptographic ceremonies.
+- Added rootless Podman ``containers/Containerfile``, hardened systemd Quadlet unit ``containers/crystal-crypto-samples.container`` (``UserNS=keep-id``, ``NoNewPrivileges=true``, ``ReadOnly=true``, ``DropCapability=ALL``), ``containers/GNUmakefile``, and root ``GNUmakefile`` ``containers-build`` and ``containers-run`` targets (``[FUNC-007]``, ``[TECH-007]``).
+- Added Phase 2 ``v0.3.1`` functional and technical specifications ``[FUNC-006]``, ``[FUNC-007]``, ``[TECH-006]``, and ``[TECH-007]`` plus ``ADR-002``, dependency-tracked phased roadmaps (``TASK-101``..``TASK-204``), declarative D2 diagrams in ``docs/diagrams/``, and visual identity assets in ``assets/``.
+
+.. rubric:: Changed
+
+- Upgraded shard dependencies to ``crystal-cbor-fido`` ``~> 0.2.2``, ``crystal-dbus-native`` ``~> 0.3.1``, ``crystal-ecc-constant`` ``~> 0.2.2``, ``crystal-pqc-constant`` ``~> 0.1.1``, and ``crystal-tpm2-tss`` ``~> 0.4.1``.
 
 [0.3.0] - 2026-10-18
 ====================

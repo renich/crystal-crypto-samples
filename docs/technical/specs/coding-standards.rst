@@ -5,12 +5,12 @@ Coding Standards
 Requirement Mapping
 -------------------
 
-Fulfills ``[FUNC-001]``, ``[FUNC-002]``, ``[FUNC-003]``, ``[FUNC-004]``, ``[FUNC-005]`` defined in :doc:`../../functional/specs/core-requirements`.
+Fulfills ``[FUNC-001]``, ``[FUNC-002]``, ``[FUNC-003]``, ``[FUNC-004]``, ``[FUNC-005]``, ``[FUNC-006]``, ``[FUNC-007]`` defined in :doc:`../../functional/specs/core-requirements`.
 
 ``[TECH-004]`` Crystal Engineering and Static Analysis Standards
 ----------------------------------------------------------------
 
-* **Fulfills**: ``[FUNC-001]``, ``[FUNC-002]``, ``[FUNC-003]``, ``[FUNC-004]``, ``[FUNC-005]``
+* **Fulfills**: ``[FUNC-001]``, ``[FUNC-002]``, ``[FUNC-003]``, ``[FUNC-004]``, ``[FUNC-005]``, ``[FUNC-006]``, ``[FUNC-007]``
 
 All source files in ``src/`` and specification files in ``spec/`` must adhere to the following engineering invariants:
 

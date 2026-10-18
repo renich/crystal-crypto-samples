@@ -12,20 +12,20 @@ vars: {
 classes: {
   milestone_container: {
     style: {
-      stroke: "#4F46E5"
+      stroke: "#059669"
       stroke-width: 2
       border-radius: 8
-      fill: "#EEF2FF"
+      fill: "#F0FDF4"
     }
   }
-  task_planned: {
+  task_done: {
     shape: rectangle
     style: {
-      stroke: "#6366F1"
+      stroke: "#10B981"
       stroke-width: 2
       border-radius: 6
-      fill: "#E0E7FF"
-      font-color: "#1E1B4B"
+      fill: "#DCFCE7"
+      font-color: "#064E3B"
     }
   }
 }
@@ -33,22 +33,22 @@ classes: {
 m2_1: "Milestone 2.1: Hybrid Classical-PQC CBOR Ceremony" {
   class: milestone_container
 
-  t201: "TASK-201 [Planned]\nX25519 + ML-KEM-768 Hybrid Combiner\nFulfills: [FUNC-006], [TECH-005], [TECH-006]" {
-    class: task_planned
+  t201: "TASK-201 [Done]\nX25519 + ML-KEM-768 Hybrid Combiner\nFulfills: [FUNC-006], [TECH-005], [TECH-006]" {
+    class: task_done
   }
-  t202: "TASK-202 [Planned]\nEd25519 + ML-DSA-65 Dual Signatures in CBOR\nFulfills: [FUNC-006], [TECH-005], [TECH-006]" {
-    class: task_planned
+  t202: "TASK-202 [Done]\nEd25519 + ML-DSA-65 Dual Signatures in CBOR\nFulfills: [FUNC-006], [TECH-005], [TECH-006]" {
+    class: task_done
   }
 }
 
 m2_2: "Milestone 2.2: End-to-End D-Bus CTAP2 Authenticator & Podman Quadlet" {
   class: milestone_container
 
-  t203: "TASK-203 [Planned]\nD-Bus CTAP2 Authenticator Service Loop\nFulfills: [FUNC-007], [TECH-005], [TECH-007]" {
-    class: task_planned
+  t203: "TASK-203 [Done]\nD-Bus CTAP2 Authenticator Service Loop\nFulfills: [FUNC-007], [TECH-005], [TECH-007]" {
+    class: task_done
   }
-  t204: "TASK-204 [Planned]\nRootless Podman Containerfile & Systemd Quadlet\nFulfills: [FUNC-007], [TECH-005], [TECH-007]" {
-    class: task_planned
+  t204: "TASK-204 [Done]\nRootless Podman Containerfile & Systemd Quadlet\nFulfills: [FUNC-007], [TECH-005], [TECH-007]" {
+    class: task_done
   }
 }
 

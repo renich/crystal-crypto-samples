@@ -51,7 +51,7 @@ Phase 1 Architecture for v0.3.0
 
 Every public entrypoint in ``CrystalCryptoSamples`` accepts ``io : IO = STDOUT`` so that ``spec/crystal_crypto_samples_spec.cr`` injects ``IO::Memory`` to assert on exact output transcripts without writing to terminal ``STDOUT``.
 
-Phase 2 Target Architecture for v0.4.0
+Phase 2 Target Architecture for v0.3.1
 --------------------------------------
 
 ``[TECH-006]`` Hybrid Classical-PQC Combiner and Canonical CBOR Transcript
@@ -61,8 +61,8 @@ Phase 2 Target Architecture for v0.4.0
 
 Phase 2 introduces ``CrystalCryptoSamples.run_hybrid_pqc_sample(io : IO = STDOUT) : Nil`` to demonstrate a quantum-resistant hybrid cryptographic ceremony:
 
-#. **Canonical CBOR Public-Key Transcript**: Ephemeral ``X25519KeyPair`` and ``MLKEMKeyPair`` instances execute parallel classical ECDH and post-quantum ``ML-KEM-768`` encapsulation. The public parameters and ciphertext are serialized into a canonical integer-keyed CBOR map via ``Crystal::Cbor::Fido.encode`` with the exact schema ``{1_i64 => "EVALINUX-HYBRID-V1", 2_i64 => x25519_pub, 3_i64 => mlkem768_pub, 4_i64 => mlkem768_ct}`` to produce ``transcript_cbor``.
-#. **Hybrid Key Encapsulation Combiner**: Both 32-byte ``SharedSecret`` buffers are consumed inside nested ``#consume`` blocks and combined with ``transcript_cbor`` using the exact SHA-256 KDF input construction ``SHA256("EVALINUX-HYBRID-KEM-V1" || x25519_ss || mlkem768_ss || transcript_cbor)`` without copying raw secret slices onto the GC heap.
+#. **Canonical CBOR Public-Key Transcript**: Ephemeral ``X25519KeyPair`` and ``MLKEMKeyPair`` instances execute parallel classical ECDH and post-quantum ``ML-KEM-768`` encapsulation. Both peers' 32-byte ``X25519`` public keys (64 bytes concatenated), the ``ML-KEM-768`` public key, and the ciphertext are serialized into a canonical integer-keyed CBOR map via ``Crystal::Cbor::Fido.encode`` with the exact schema ``{1_i64 => "EVALINUX-HYBRID-V1", 2_i64 => x25519_pub, 3_i64 => mlkem768_pub, 4_i64 => mlkem768_ct}`` to produce ``transcript_cbor``.
+#. **Hybrid Key Encapsulation Combiner**: Both 32-byte ``SharedSecret`` buffers are consumed inside nested ``#consume`` blocks and combined with ``transcript_cbor`` using the exact SHA-256 KDF input construction ``SHA256("EVALINUX-HYBRID-KEM-V1" || x25519_ss || mlkem768_ss || transcript_cbor)``, storing the derived 32-byte session key in a guarded ``Crystal::Ecc::Constant::SecureBuffer`` compared via ``with_bytes`` and ``Sodium.constant_time_equal?``.
 #. **Composite Dual-Signature Assertion**: ``transcript_cbor`` is signed with both ``Ed25519KeyPair#sign`` and ``MLDSAKeyPair#sign``. Both signatures are serialized into the canonical integer-keyed CBOR assertion map ``{1_i64 => transcript_cbor, 2_i64 => ed25519_sig, 3_i64 => mldsa65_sig}`` and verified in sequence after decoding via ``Crystal::Cbor::Fido.decode``.
 
 ``[TECH-007]`` D-Bus CTAP2 Authenticator Service Loop and Rootless Podman Blueprint
@@ -72,5 +72,5 @@ Phase 2 introduces ``CrystalCryptoSamples.run_hybrid_pqc_sample(io : IO = STDOUT
 
 Phase 2 introduces ``CrystalCryptoSamples.run_ctap2_dbus_sample(io : IO = STDOUT) : Nil`` and container packaging:
 
-#. **D-Bus CTAP2 RPC Loop**: Over an authenticated ``UNIXSocket.pair`` ``DBusConnection``, a client fiber encodes a canonical CTAP2 CBOR command frame inside a D-Bus method call to object path ``/org/evalinux/Ctap2Authenticator1``, interface ``org.evalinux.Ctap2Authenticator1``, and method ``MakeCredential`` using the D-Bus signature ``ay`` -> ``ay`` via ``BodyCodec.encode("ay", ...)``. The responder fiber decodes the ``ay`` byte array via ``BodyCodec.decode("ay", ...)`` and ``Crystal::Cbor::Fido.decode``, signs the assertion using ``Crystal::Tpm2::Tss::FIDO2Credential`` and ``Crystal::Pqc::Constant::MLDSAKeyPair``, and returns the canonical CBOR response frame as a D-Bus ``ay`` ``METHOD_RETURN`` message.
-#. **Rootless Podman and Systemd Quadlet**: The repository will include ``containers/Containerfile`` for multi-stage Alpine/Fedora rootless builds and ``containers/crystal-crypto-samples.container`` systemd Quadlet configuration aligned with ``../init/app``.
+#. **D-Bus CTAP2 RPC Loop**: Over an authenticated ``UNIXSocket.pair`` ``DBusConnection``, a client fiber encodes a canonical CTAP2 CBOR command frame inside a D-Bus method call to object path ``/org/evalinux/Ctap2Authenticator1``, interface ``org.evalinux.Ctap2Authenticator1``, and method ``MakeCredential`` using the D-Bus signature ``ay`` -> ``ay`` via ``BodyCodec.encode("ay", ...)``. The responder fiber validates the D-Bus routing headers, decodes the ``ay`` byte array via ``Crystal::Cbor::Fido.decode``, signs ``SHA256(rp_id || challenge)`` using ``Crystal::Tpm2::Tss::FIDO2Credential`` and ``Crystal::Pqc::Constant::MLDSAKeyPair``, and returns the canonical CBOR response map ``{1_i64 => cred_id, 2_i64 => r, 3_i64 => s, 4_i64 => pqc_sig, 5_i64 => public_key_x, 6_i64 => public_key_y}`` as a D-Bus ``ay`` ``METHOD_RETURN`` message for self-contained client verification via ``P256Key.verify_public_key`` and ``MLDSAKeyPair#verify``.
+#. **Rootless Podman and Systemd Quadlet**: The repository includes ``containers/Containerfile`` for multi-stage Fedora rootless builds and ``containers/crystal-crypto-samples.container`` systemd Quadlet configuration aligned with ``../init/app``.

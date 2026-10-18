@@ -19,3 +19,13 @@ Building and Running
    shards install
    make all
    ./bin/crystal-crypto-samples
+
+Rootless Podman Container Execution
+-----------------------------------
+
+Build and execute the hardened rootless container image via ``GNUmakefile``:
+
+.. code-block:: bash
+
+   make containers-build
+   make containers-run

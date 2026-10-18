@@ -2,7 +2,7 @@
 Functional Specifications
 =========================
 
-This section defines the deterministic functional requirements ``[FUNC-001]`` through ``[FUNC-007]`` for ``crystal-crypto-samples`` across Phase 1 ``v0.3.0`` and Phase 2 ``v0.4.0``.
+This section defines the deterministic functional requirements ``[FUNC-001]`` through ``[FUNC-007]`` for ``crystal-crypto-samples`` across Phase 1 ``v0.3.0`` and Phase 2 ``v0.3.1``.
 
 Traceability Matrix Summary
 ---------------------------
@@ -38,11 +38,11 @@ Traceability Matrix Summary
    * - ``[FUNC-006]``
      - Hybrid Classical and Post-Quantum Cryptographic Ceremony
      - ``[TECH-005]``, ``[TECH-006]``
-     - ``v0.4.0``
+     - ``v0.3.1``
    * - ``[FUNC-007]``
      - End-to-End D-Bus CTAP2 Authenticator Ceremony and Rootless Podman Packaging
      - ``[TECH-005]``, ``[TECH-007]``
-     - ``v0.4.0``
+     - ``v0.3.1``
 
 .. toctree::
    :maxdepth: 2

@@ -25,7 +25,7 @@ Technical Traceability Summary
      - ``[FUNC-005]``
    * - ``[TECH-004]``
      - Crystal Type Safety, Deterministic Disposal, and Static Analysis
-     - ``[FUNC-001]``, ``[FUNC-002]``, ``[FUNC-003]``, ``[FUNC-004]``, ``[FUNC-005]``
+     - ``[FUNC-001]``, ``[FUNC-002]``, ``[FUNC-003]``, ``[FUNC-004]``, ``[FUNC-005]``, ``[FUNC-006]``, ``[FUNC-007]``
    * - ``[TECH-005]``
      - Secret Redaction and Side-Channel Threat Mitigations
      - ``[FUNC-002]``, ``[FUNC-003]``, ``[FUNC-005]``, ``[FUNC-006]``, ``[FUNC-007]``

@@ -42,8 +42,9 @@ pages:
     - apk add --no-cache make bash git
   script:
     - make docs
-    - mkdir -p public
-    - cp -r docs/* public/
+    - mkdir -p public/technical/api
+    - if [ -d docs/build/dirhtml ]; then cp -r docs/build/dirhtml/* public/; fi
+    - cp -r docs/technical/api/* public/technical/api/
   artifacts:
     paths:
       - public

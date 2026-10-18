@@ -20,7 +20,8 @@ SPECS := $(shell find spec -name '*.cr' 2>/dev/null)
 RST_FILES := $(wildcard *.rst) $(shell find docs -type f -name '*.rst' 2>/dev/null)
 
 .DEFAULT_GOAL := all
-.PHONY: all build test spec check lint doc-check format docs install uninstall clean distclean help
+.PHONY: all build test spec check lint doc-check format docs install uninstall \
+        containers-build containers-run clean distclean help
 
 all: lint test build ## Run linters, test suite, and build sample binary
 
@@ -73,12 +74,19 @@ docs: | lib ## Generate Crystal API documentation and Sphinx dirhtml portal
 install: bin/crystal-crypto-samples docs ## Install binary and documentation
 	install -d $(DESTDIR)$(BINDIR)
 	install -m 0755 bin/crystal-crypto-samples $(DESTDIR)$(BINDIR)/crystal-crypto-samples
-	install -d $(DESTDIR)$(DOCDIR)
-	cp -r docs/* $(DESTDIR)$(DOCDIR)/
+	install -d $(DESTDIR)$(DOCDIR)/technical/api
+	@if [ -d docs/build/dirhtml ]; then cp -r docs/build/dirhtml/* $(DESTDIR)$(DOCDIR)/; fi
+	cp -r docs/technical/api/* $(DESTDIR)$(DOCDIR)/technical/api/
 
 uninstall: ## Remove installed binary and documentation
 	rm -f $(DESTDIR)$(BINDIR)/crystal-crypto-samples
 	rm -rf $(DESTDIR)$(DOCDIR)
+
+containers-build: ## Build rootless Podman container image
+	$(MAKE) -C containers build
+
+containers-run: ## Run containerized sample suite with Podman
+	$(MAKE) -C containers run
 
 clean: ## Remove build artifacts and generated documentation
 	rm -rf docs/technical/api docs/build public .crystal bin shard.lock
@@ -88,4 +96,4 @@ distclean: clean ## Remove all build outputs and installed shard dependencies
 
 help: ## Display available targets
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
+		awk 'BEGIN {FS = ":.*?## "}; {printf "  %-18s %s\n", $$1, $$2}'
